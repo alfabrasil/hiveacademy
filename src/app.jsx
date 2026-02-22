@@ -87,27 +87,8 @@ import VaultScreen from './components/screens/VaultScreen';
 import ShopScreen from './components/screens/ShopScreen';
 import WarehouseScreen from './components/screens/WarehouseScreen';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const SCENARIO_UNLOCK_COST = 10;
+const FREE_SCENARIO_PHRASES = 3;
 
 export default function App() {
   const [isRegistered, setIsRegistered] = useState(() => {
@@ -236,6 +217,32 @@ export default function App() {
     ];
   });
 
+  const [scenarioUnlocks, setScenarioUnlocks] = useState(() => {
+    const saved = localStorage.getItem('hive_scenarioUnlocks');
+    return saved !== null ? JSON.parse(saved) : {};
+  });
+
+  const [miniGameUsage, setMiniGameUsage] = useState(() => {
+    const saved = localStorage.getItem('hive_miniGameUsage');
+    if (saved !== null) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+      }
+    }
+    const beeSaved = localStorage.getItem('hive_bee');
+    let initialDay = 0;
+    if (beeSaved !== null) {
+      try {
+        const parsed = JSON.parse(beeSaved);
+        initialDay = parsed.ageDays || 0;
+      } catch {
+        initialDay = 0;
+      }
+    }
+    return { day: initialDay, plays: 0 };
+  });
+
   useEffect(() => {
     localStorage.setItem('hive_isRegistered', JSON.stringify(isRegistered));
     localStorage.setItem('hive_bee', JSON.stringify(bee));
@@ -248,7 +255,9 @@ export default function App() {
     localStorage.setItem('hive_achievements', JSON.stringify(achievements));
     localStorage.setItem('hive_ownedAccessories', JSON.stringify(ownedAccessories));
     localStorage.setItem('hive_spinUsage', JSON.stringify(spinUsage));
-  }, [isRegistered, bee, wallet, inventory, isNight, history, missions, dictionary, achievements, ownedAccessories, spinUsage]);
+    localStorage.setItem('hive_scenarioUnlocks', JSON.stringify(scenarioUnlocks));
+    localStorage.setItem('hive_miniGameUsage', JSON.stringify(miniGameUsage));
+  }, [isRegistered, bee, wallet, inventory, isNight, history, missions, dictionary, achievements, ownedAccessories, spinUsage, scenarioUnlocks, miniGameUsage]);
 
   useEffect(() => {
     if (!isRegistered) return;
@@ -493,6 +502,20 @@ export default function App() {
     }
   };
 
+  const unlockScenario = (scenario) => {
+    if (scenarioUnlocks[scenario.id]) return;
+    if (wallet.hny < SCENARIO_UNLOCK_COST) {
+      playSound('error');
+      addNotification("HNY insuficiente para desbloquear mais frases deste cenário.");
+      return;
+    }
+    playSound('pop');
+    setWallet(w => ({ ...w, hny: w.hny - SCENARIO_UNLOCK_COST }));
+    addTransaction('expense', SCENARIO_UNLOCK_COST, `Desbloqueio Cenário: ${scenario.title}`);
+    setScenarioUnlocks(prev => ({ ...prev, [scenario.id]: true }));
+    addNotification(`Cenário "${scenario.title}" desbloqueado. Mais frases liberadas!`);
+  };
+
   const study = (lessonId = null) => {
     if (isNight || bee.energy < 20) {
       playSound('error');
@@ -674,6 +697,27 @@ export default function App() {
   };
 
   const startMiniGame = () => {
+    const isNewDay = miniGameUsage.day !== bee.ageDays;
+    const playsToday = isNewDay ? 0 : miniGameUsage.plays;
+    const cost = playsToday < 3 ? 5 : 10;
+
+    if (wallet.hny < cost) {
+      playSound('error');
+      addNotification(`Precisa de ${cost} HNY para jogar este Mini Jogo.`);
+      return;
+    }
+
+    playSound('pop');
+    setWallet(w => ({ ...w, hny: w.hny - cost }));
+    addTransaction('expense', cost, playsToday < 3 ? 'Mini Jogo Diário' : 'Mini Jogo Extra');
+    setMiniGameUsage(prev => {
+      if (prev.day !== bee.ageDays) {
+        return { day: bee.ageDays, plays: 1 };
+      }
+      return { ...prev, plays: prev.plays + 1 };
+    });
+    addNotification(`Mini Jogo iniciado (-${cost} HNY). Boa sorte!`);
+
     const shuffled = [...QUIZ_WORDS].sort(() => 0.5 - Math.random()).slice(0, 3);
     setQuizState({ active: true, questions: shuffled, currentIndex: 0, correctCount: 0, finished: false });
     setCurrentTab('minigame');
@@ -1065,6 +1109,9 @@ export default function App() {
 
   const renderScenarios = () => {
     if (activeScenario) {
+      const isUnlocked = !!scenarioUnlocks[activeScenario.id];
+      const visiblePhrases = isUnlocked ? activeScenario.phrases : activeScenario.phrases.slice(0, FREE_SCENARIO_PHRASES);
+      const lockedCount = isUnlocked ? 0 : Math.max(0, activeScenario.phrases.length - FREE_SCENARIO_PHRASES);
       return (
         <div className="p-6 pb-28 h-full overflow-y-auto animate-slide-up flex flex-col">
           <div className="w-full flex justify-between items-center mb-6">
@@ -1078,7 +1125,7 @@ export default function App() {
           </div>
           <p className="text-gray-500 dark:text-gray-400 mb-4 font-bold text-sm">Ouça e pratique a pronúncia no microfone:</p>
           <div className="flex-1 space-y-3 mb-6 overflow-y-auto hide-scrollbar">
-            {activeScenario.phrases.map((phrase, idx) => (
+            {visiblePhrases.map((phrase, idx) => (
               <div key={idx} className="bg-white dark:bg-[#1A1A1A] p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 flex flex-col gap-3">
                 <div className="flex justify-between items-start gap-4">
                   <h4 className="font-black text-gray-800 dark:text-white text-lg leading-tight">{phrase.en}</h4>
@@ -1104,9 +1151,21 @@ export default function App() {
               </div>
             ))}
           </div>
-          <HoneyButton onClick={finishScenarioTraining} variant="action" className="w-full mt-auto">
-            Concluir Treino (+15 EXP)
-          </HoneyButton>
+          {!isUnlocked && lockedCount > 0 && (
+            <div className="w-full mb-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-sm text-emerald-800 dark:text-emerald-300 font-bold">
+              Está a ver apenas {FREE_SCENARIO_PHRASES} frases gratuitas. Desbloqueie mais {lockedCount} frases deste cenário por {SCENARIO_UNLOCK_COST} HNY.
+            </div>
+          )}
+          <div className="w-full flex flex-col gap-3 mt-auto">
+            {!isUnlocked && lockedCount > 0 && (
+              <HoneyButton onClick={() => unlockScenario(activeScenario)} variant="secondary" className="w-full">
+                Desbloquear Frases Avançadas (-{SCENARIO_UNLOCK_COST} HNY)
+              </HoneyButton>
+            )}
+            <HoneyButton onClick={finishScenarioTraining} variant="action" className="w-full">
+              Concluir Treino (+15 EXP)
+            </HoneyButton>
+          </div>
         </div>
       );
     }
@@ -1124,21 +1183,41 @@ export default function App() {
         <p className="text-gray-500 dark:text-gray-400 mb-6 font-bold">Escolha uma situação da vida real para treinar a sua conversação e expandir o seu vocabulário.</p>
         
         <div className="grid grid-cols-1 gap-4">
-          {TRAVEL_SCENARIOS.map((scenario) => (
-            <button 
-              key={scenario.id}
-              onClick={() => setActiveScenario(scenario)}
-              className="bg-white dark:bg-[#1A1A1A] p-5 rounded-[24px] shadow-md border border-gray-100 dark:border-white/5 flex items-center gap-4 hover:scale-[1.02] active:scale-95 transition-all text-left"
-            >
-              <div className="w-14 h-14 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
-                <scenario.icon size={28} />
-              </div>
-              <div>
-                <h3 className="text-lg font-black text-gray-800 dark:text-white">{scenario.title}</h3>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{scenario.phrases.length} frases essenciais</p>
-              </div>
-            </button>
-          ))}
+          {TRAVEL_SCENARIOS.map((scenario) => {
+            const isUnlocked = !!scenarioUnlocks[scenario.id];
+            const total = scenario.phrases.length;
+            const premiumCount = Math.max(0, total - FREE_SCENARIO_PHRASES);
+            const infoText = isUnlocked
+              ? `${total} frases liberadas`
+              : premiumCount > 0
+              ? `${FREE_SCENARIO_PHRASES} grátis + ${premiumCount} premium`
+              : `${total} frases essenciais`;
+            return (
+              <button 
+                key={scenario.id}
+                onClick={() => setActiveScenario(scenario)}
+                className="bg-white dark:bg-[#1A1A1A] p-5 rounded-[24px] shadow-md border border-gray-100 dark:border-white/5 flex items-center gap-4 hover:scale-[1.02] active:scale-95 transition-all text-left"
+              >
+                <div className="w-14 h-14 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
+                  <scenario.icon size={28} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-black text-gray-800 dark:text-white">{scenario.title}</h3>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{infoText}</p>
+                </div>
+                {!isUnlocked && premiumCount > 0 && (
+                  <div className="px-3 py-1 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-xs font-black text-emerald-700 dark:text-emerald-300 shrink-0">
+                    -{SCENARIO_UNLOCK_COST} HNY
+                  </div>
+                )}
+                {isUnlocked && (
+                  <div className="px-3 py-1 rounded-2xl bg-emerald-500/10 border border-emerald-400/60 text-xs font-black text-emerald-600 dark:text-emerald-300 shrink-0">
+                    Liberado
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     );
@@ -1176,7 +1255,12 @@ export default function App() {
             <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl text-white shadow-inner"><Book size={28} /></div>
             <h3 className="text-xl font-black text-white drop-shadow-md">Mini Jogos Educativos</h3>
           </div>
-          <p className="text-indigo-100 text-sm font-medium relative z-10">Aprenda vocabulário rápido. Acerte as palavras e ganhe bônus em HNY!</p>
+          <p className="text-indigo-100 text-sm font-medium relative z-10">
+            Aprenda vocabulário rápido. 3 jogos/dia por 5 HNY, extras por 10 HNY.
+          </p>
+          <div className="mt-3 inline-flex items-center gap-2 bg-white/15 rounded-full px-3 py-1 text-[11px] font-bold text-indigo-100 relative z-10">
+            <span>Jogos hoje: {miniGameUsage.day === bee.ageDays ? miniGameUsage.plays : 0}/3</span>
+          </div>
         </button>
 
         <button onClick={() => setCurrentTab('pvp')} className="w-full relative overflow-hidden bg-gradient-to-r from-red-500 to-orange-500 rounded-[30px] p-6 text-left shadow-[0_10px_20px_rgba(239,68,68,0.3)] hover:scale-[1.02] active:scale-95 transition-all border border-white/20">

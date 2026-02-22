@@ -54,11 +54,11 @@ const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, 
           )}
         </div>
         <div className="absolute -top-4 w-10 flex justify-between z-0">
-          <div className="w-2 h-10 border-l-4 border-t-4 border-[#1A1A1A] rounded-tl-full transform -rotate-12">
-            <div className="absolute -top-3 -left-3 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-md"></div>
+          <div className="w-2 h-10 md:h-14 border-l-4 border-t-4 border-[#1A1A1A] rounded-tl-full transform -rotate-12">
+            <div className="absolute -top-3 md:-top-4 -left-3 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-md"></div>
           </div>
-          <div className="w-2 h-10 border-r-4 border-t-4 border-[#1A1A1A] rounded-tr-full transform rotate-12">
-            <div className="absolute -top-3 -right-3 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-md"></div>
+          <div className="w-2 h-10 md:h-14 border-r-4 border-t-4 border-[#1A1A1A] rounded-tr-full transform rotate-12">
+            <div className="absolute -top-3 md:-top-4 -right-3 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-md"></div>
           </div>
         </div>
 
