@@ -39,6 +39,11 @@ const AcademyScreen = ({ bee, startStudy, playSound }) => {
             const isCurrent = node.level === currentLevel;
             const isLocked = node.level > currentLevel;
 
+            let moduleHeader = null;
+            if (node.id === 1) moduleHeader = { title: "Módulo 1: Fundamentos", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800" };
+            if (node.id === 11) moduleHeader = { title: "Módulo 2: Construção", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800" };
+            if (node.id === 19) moduleHeader = { title: "Módulo 3: Fluência", color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800" };
+
             // Posição para efeito ziguezague suave (alternando levemente esquerda/direita ou centralizado)
             // Para mobile, centralizado é mais seguro e limpo. Vamos manter centralizado com ícones grandes.
 
@@ -57,10 +62,17 @@ const AcademyScreen = ({ bee, startStudy, playSound }) => {
             }
 
             return (
-              <div key={node.id} className="flex flex-col items-center group">
+              <div key={node.id} className="flex flex-col items-center group w-full">
+                {moduleHeader && (
+                  <div className={`mb-12 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-sm border ${moduleHeader.color} z-20 animate-slide-up`}>
+                    {moduleHeader.title}
+                  </div>
+                )}
+                
+                <div className="flex flex-col items-center">
                 <button
                   onClick={() => handleNodeClick(node)}
-                  className={`w-20 h-20 rounded-full flex items-center justify-center border-b-4 transition-all active:scale-95 ${statusColor} relative`}
+                  className={`w-20 h-20 rounded-full flex items-center justify-center border-b-4 transition-all active:scale-95 ${statusColor} relative z-10`}
                 >
                   {node.type === 'chest' && !isCompleted && !isLocked ? <Gift size={32} className="animate-bounce"/> : 
                    node.type === 'chest' ? <Gift size={28}/> :
@@ -84,6 +96,7 @@ const AcademyScreen = ({ bee, startStudy, playSound }) => {
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Nível {node.level}</p>
                 </div>
               </div>
+            </div>
             );
           })}
         </div>

@@ -62,6 +62,7 @@ import {
   TRAVEL_SCENARIOS, 
   SENTENCE_GAMES, 
   CURRICULUM, 
+  LESSONS_CONTENT,
   CONVERSATIONS, 
   QUIZ_WORDS, 
   PROFESSIONS, 
@@ -186,6 +187,26 @@ export default function App() {
   const [showSpinModal, setShowSpinModal] = useState(false);
   const [spinResult, setSpinResult] = useState(null);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [spinUsage, setSpinUsage] = useState(() => {
+    const saved = localStorage.getItem('hive_spinUsage');
+    if (saved !== null) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+      }
+    }
+    const beeSaved = localStorage.getItem('hive_bee');
+    let initialDay = 0;
+    if (beeSaved !== null) {
+      try {
+        const parsed = JSON.parse(beeSaved);
+        initialDay = parsed.ageDays || 0;
+      } catch {
+        initialDay = 0;
+      }
+    }
+    return { day: initialDay, freeUsed: false, paidCount: 0 };
+  });
 
   const [currentTab, setCurrentTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -226,7 +247,8 @@ export default function App() {
     localStorage.setItem('hive_dictionary', JSON.stringify(dictionary));
     localStorage.setItem('hive_achievements', JSON.stringify(achievements));
     localStorage.setItem('hive_ownedAccessories', JSON.stringify(ownedAccessories));
-  }, [isRegistered, bee, wallet, inventory, isNight, history, missions, dictionary, achievements, ownedAccessories]);
+    localStorage.setItem('hive_spinUsage', JSON.stringify(spinUsage));
+  }, [isRegistered, bee, wallet, inventory, isNight, history, missions, dictionary, achievements, ownedAccessories, spinUsage]);
 
   useEffect(() => {
     if (!isRegistered) return;
@@ -471,13 +493,20 @@ export default function App() {
     }
   };
 
-  const study = () => {
+  const study = (lessonId = null) => {
     if (isNight || bee.energy < 20) {
       playSound('error');
       return;
     }
     playSound('pop');
-    const stagePhrases = CURRICULUM[bee.stage] || CURRICULUM['Jovem'];
+    
+    let stagePhrases;
+    if (lessonId && LESSONS_CONTENT[lessonId]) {
+      stagePhrases = LESSONS_CONTENT[lessonId];
+    } else {
+      stagePhrases = CURRICULUM[bee.stage] || CURRICULUM['Jovem'];
+    }
+
     const shuffled = [...stagePhrases].sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, 3);
     setStudySession({ active: true, step: 0, phrases: selected, revealed: false, earnedExp: 0 });
@@ -941,15 +970,46 @@ export default function App() {
   };
 
   const handleSpin = () => {
-    if (wallet.hny < 5) {
+    let usage = spinUsage || { day: bee.ageDays, freeUsed: false, paidCount: 0 };
+    if (usage.day !== bee.ageDays) {
+      usage = { day: bee.ageDays, freeUsed: false, paidCount: 0 };
+      setSpinUsage(usage);
+    }
+
+    const currentPaid = usage.paidCount || 0;
+    const remainingPaid = Math.max(0, 2 - currentPaid);
+    const hasFree = !usage.freeUsed;
+    const canPaid = remainingPaid > 0;
+
+    if (!hasFree && !canPaid) {
       playSound('error');
-      addNotification("HNY Insuficiente para girar a roleta (5 HNY)!");
+      addNotification("Limite diário da roleta atingido. Volte amanhã.");
       return;
     }
-    
-    playSound('pop');
-    setWallet(w => ({ ...w, hny: w.hny - 5 }));
-    addTransaction('expense', 5, 'Roleta da Sorte');
+
+    if (hasFree) {
+      playSound('pop');
+      addNotification("Rodada grátis diária usada!");
+      setSpinUsage(prev => {
+        const base = prev && prev.day === bee.ageDays ? prev : { day: bee.ageDays, freeUsed: false, paidCount: 0 };
+        return { ...base, freeUsed: true };
+      });
+    } else {
+      if (wallet.hny < 5) {
+        playSound('error');
+        addNotification("HNY Insuficiente para girar a roleta (5 HNY)!");
+        return;
+      }
+      playSound('pop');
+      setWallet(w => ({ ...w, hny: w.hny - 5 }));
+      addTransaction('expense', 5, 'Roleta da Sorte');
+      setSpinUsage(prev => {
+        const base = prev && prev.day === bee.ageDays ? prev : { day: bee.ageDays, freeUsed: true, paidCount: 0 };
+        const paid = base.paidCount || 0;
+        return { ...base, paidCount: paid + 1 };
+      });
+    }
+
     setIsSpinning(true);
     setSpinResult(null);
 
@@ -1707,6 +1767,22 @@ export default function App() {
   const renderSpinModal = () => {
     if (!showSpinModal) return null;
 
+    let usage = spinUsage || { day: bee.ageDays, freeUsed: false, paidCount: 0 };
+    if (usage.day !== bee.ageDays) {
+      usage = { day: bee.ageDays, freeUsed: false, paidCount: 0 };
+    }
+    const currentPaid = usage.paidCount || 0;
+    const remainingPaid = Math.max(0, 2 - currentPaid);
+    const hasFree = !usage.freeUsed;
+    const disableByLimit = !hasFree && remainingPaid <= 0;
+    const buttonLabel = isSpinning
+      ? 'A girar...'
+      : hasFree
+        ? 'Girar Roleta (Grátis)'
+        : remainingPaid > 0
+          ? 'Girar Roleta (5 HNY)'
+          : 'Limite de Hoje Atingido';
+
     return (
       <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex justify-center items-center p-4">
         <div className="bg-gradient-to-b from-[#1A1A1A] to-[#333] w-full max-w-md rounded-[40px] p-8 shadow-2xl border-2 border-purple-500/30 text-center relative overflow-hidden animate-slide-up">
@@ -1718,7 +1794,7 @@ export default function App() {
             <button onClick={() => { setShowSpinModal(false); setSpinResult(null); }} className="text-gray-400 hover:text-white"><X size={24}/></button>
           </div>
           
-          <p className="text-gray-400 font-medium mb-8">Tente a sua sorte! Gire a roleta por apenas <span className="text-[#FFC83D] font-bold">5 HNY</span> e ganhe prémios incríveis.</p>
+          <p className="text-gray-400 font-medium mb-4">Tente a sua sorte! Todos os dias tem 1 rodada grátis e até <span className="text-[#FFC83D] font-bold">2 rodadas pagas</span> por 5 HNY cada.</p>
 
           <div className="relative w-48 h-48 mx-auto mb-8">
             <div className={`w-full h-full rounded-full border-8 border-purple-500/50 flex items-center justify-center bg-[#222] shadow-[0_0_30px_rgba(168,85,247,0.4)] ${isSpinning ? 'animate-spin-fast' : ''}`}>
@@ -1733,9 +1809,13 @@ export default function App() {
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[20px] border-t-yellow-400 drop-shadow-lg z-10"></div>
           </div>
 
-          <HoneyButton onClick={handleSpin} disabled={isSpinning} variant="action" className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 border-purple-800">
-            {isSpinning ? 'A girar...' : 'Girar Roleta (5 HNY)'}
+          <HoneyButton onClick={handleSpin} disabled={isSpinning || disableByLimit} variant="action" className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 border-purple-800">
+            {buttonLabel}
           </HoneyButton>
+          <p className="text-xs text-gray-500 mt-3 font-bold">
+            Hoje: <span className={hasFree ? 'text-green-400' : 'text-gray-400'}>{hasFree ? '1 rodada grátis disponível' : 'rodada grátis usada'}</span>
+            <span className="ml-1 text-purple-300">{remainingPaid} pagas restantes</span>
+          </p>
         </div>
       </div>
     );
@@ -1895,8 +1975,8 @@ export default function App() {
             <button onClick={() => {setCurrentTab('home'); setIsMenuOpen(false);}} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${currentTab === 'home' && !isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
               <Home size={24} />
             </button>
-            <button onClick={() => {setCurrentTab('academy'); setIsMenuOpen(false);}} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${currentTab === 'academy' && !isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
-              <BookOpen size={24} />
+            <button onClick={() => {setCurrentTab('game'); setIsMenuOpen(false);}} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${currentTab === 'game' && !isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
+              <Play size={24} />
             </button>
             <div className="flex-1 flex justify-center relative -top-6 mx-1">
               <button onClick={() => {setCurrentTab('shop'); setIsMenuOpen(false);}} className="w-16 h-16 bg-gradient-to-br from-[#FF9F1C] to-[#D35400] rounded-[24px] rotate-45 flex justify-center items-center shadow-[0_10px_20px_rgba(211,84,0,0.4)] border-4 border-[#1A1A1A] hover:scale-110 transition-transform active:scale-95">

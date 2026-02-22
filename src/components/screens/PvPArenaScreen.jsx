@@ -237,6 +237,7 @@ const PvPArenaScreen = ({ bee, setBee, wallet, setWallet, addTransaction, playSo
       <div>
         <h2 className="text-3xl font-black text-white uppercase drop-shadow-md">Arena PvP</h2>
         <p className="text-gray-300 font-bold">Desafie outras abelhas em batalhas de conhecimento!</p>
+        <p className="text-xs text-gray-400 mt-1 font-medium">Energia atual: <span className="text-yellow-400 font-black">{bee.energy}</span></p>
       </div>
 
       <div className="bg-white/10 p-4 rounded-2xl w-full max-w-xs backdrop-blur-sm border border-white/20">
@@ -247,6 +248,7 @@ const PvPArenaScreen = ({ bee, setBee, wallet, setWallet, addTransaction, playSo
           <button onClick={() => setBetAmount(betAmount + 10)} className="p-2 text-white hover:text-green-400 font-bold">+</button>
         </div>
         <p className="text-xs text-gray-400 mt-2">Prêmio: <span className="text-green-400">{betAmount * 2} HNY</span></p>
+        <p className="text-[10px] text-gray-400 mt-1">Custos: Rápido 5⚡ · Forte 15⚡ · Curar 20⚡</p>
       </div>
 
       <HoneyButton onClick={startSearch} variant="action" className="w-full max-w-xs bg-gradient-to-r from-red-600 to-orange-600 border-red-800 hover:scale-105">
@@ -285,7 +287,10 @@ const PvPArenaScreen = ({ bee, setBee, wallet, setWallet, addTransaction, playSo
                style={{ width: `${(playerHP / (100 + bee.level * 5)) * 100}%` }}
              ></div>
           </div>
-          <span className="text-xs text-white font-mono mt-1">{playerHP} HP</span>
+          <div className="flex items-center gap-3 mt-1">
+            <span className="text-xs text-white font-mono">{playerHP} HP</span>
+            <span className="text-[10px] font-black text-yellow-400 bg-yellow-900/30 px-2 py-[2px] rounded-lg border border-yellow-700/40">⚡ {bee.energy}</span>
+          </div>
         </div>
 
         <div className="text-red-500 font-black text-xl italic">VS</div>
@@ -382,6 +387,10 @@ const PvPArenaScreen = ({ bee, setBee, wallet, setWallet, addTransaction, playSo
                </div>
              )}
              
+            <div className="text-center mt-2">
+              <span className="text-[11px] text-gray-400 font-bold">Energia disponível: <span className="text-yellow-500">{bee.energy}</span> ⚡</span>
+            </div>
+            
              {/* BOTÃO DE FUGIR/SAIR CASO FIQUE PRESO SEM ENERGIA */}
              {turn === 'player' && bee.energy < 5 && (
                 <div className="animate-pulse mt-4">
