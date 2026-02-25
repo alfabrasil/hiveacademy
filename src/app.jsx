@@ -1905,6 +1905,13 @@ export default function App() {
     );
   };
 
+  const handleDayNightToggle = (newIsNight) => {
+    if (isNight && !newIsNight) {
+      advanceDay();
+    }
+    setIsNight(newIsNight);
+  };
+
   if (!isRegistered) {
     return (
       <div className="min-h-screen flex items-center justify-center font-sans dark transition-colors duration-700">
@@ -1953,7 +1960,7 @@ export default function App() {
             <HomeScreen 
               bee={bee}
               isNight={isNight}
-              setIsNight={setIsNight}
+              setIsNight={handleDayNightToggle}
               missions={missions}
               setShowSpinModal={setShowSpinModal}
               setShowMissions={setShowMissions}
