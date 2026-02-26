@@ -17,7 +17,7 @@ const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, 
       <div className="absolute bottom-4 w-32 h-8 bg-black/20 dark:bg-black/40 blur-md rounded-[100%] transition-all duration-1000 scale-100 animate-pulse"></div>
       <div className={`relative w-full h-full flex justify-center items-center ${isSleeping ? 'translate-y-4' : 'animate-bounce-slow group-active:scale-95 transition-transform'}`}>
         {/* Pernas */}
-        <div className="absolute bottom-[10%] w-24 flex justify-between px-3 z-0">
+        <div className="absolute bottom-[2%] w-24 flex justify-between px-3 z-0">
            <div className={`w-2 h-14 bg-[#1A1A1A] rounded-full origin-top transform -rotate-12 shadow-sm ${!isSleeping ? 'animate-swing' : ''}`}>
               <div className="absolute -bottom-1 -left-1 w-4 h-5 bg-[#1A1A1A] rounded-full"></div>
            </div>
@@ -116,7 +116,7 @@ const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, 
         </div>
 
         <div className="absolute z-30 pointer-events-none flex justify-center w-full h-full">
-          {isJovem && <div className="absolute -right-6 top-16 w-12 h-16 bg-blue-500 rounded-lg shadow-lg border-2 border-blue-700 flex justify-center items-center transform rotate-12"><Book size={20} color="white"/></div>}
+          {isJovem && <div className="absolute -right-2 top-16 w-12 h-16 bg-blue-500 rounded-lg shadow-lg border-2 border-blue-700 flex justify-center items-center transform rotate-12"><Book size={20} color="white"/></div>}
           
           {profession === 'operario' && <div className="absolute -top-6 w-16 h-10 bg-gray-400 rounded-t-[30px] shadow-lg border-b-4 border-gray-600"></div>}
           {profession === 'soldado' && <div className="absolute -top-8 w-20 h-12 bg-red-700 rounded-t-[40px] shadow-lg border-b-4 border-red-900 flex justify-center"><div className="w-4 h-4 bg-yellow-400 rounded-full mt-2"></div></div>}
