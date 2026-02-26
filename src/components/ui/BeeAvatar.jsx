@@ -16,6 +16,31 @@ const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, 
       )}
       <div className="absolute bottom-4 w-32 h-8 bg-black/20 dark:bg-black/40 blur-md rounded-[100%] transition-all duration-1000 scale-100 animate-pulse"></div>
       <div className={`relative w-full h-full flex justify-center items-center ${isSleeping ? 'translate-y-4' : 'animate-bounce-slow group-active:scale-95 transition-transform'}`}>
+        {/* Pernas */}
+        <div className="absolute bottom-[10%] w-24 flex justify-between px-3 z-0">
+           <div className={`w-2 h-14 bg-[#1A1A1A] rounded-full origin-top transform -rotate-12 shadow-sm ${!isSleeping ? 'animate-swing' : ''}`}>
+              <div className="absolute -bottom-1 -left-1 w-4 h-5 bg-[#1A1A1A] rounded-full"></div>
+           </div>
+           <div className={`w-2 h-14 bg-[#1A1A1A] rounded-full origin-top transform rotate-12 shadow-sm ${!isSleeping ? 'animate-swing' : ''}`} style={{animationDelay: '0.5s'}}>
+              <div className="absolute -bottom-1 -right-1 w-4 h-5 bg-[#1A1A1A] rounded-full"></div>
+           </div>
+        </div>
+
+        {/* Braços */}
+        <div className="absolute top-[45%] w-44 flex justify-between z-0 pointer-events-none">
+           {/* Braço Esquerdo */}
+           <div className={`relative w-12 h-8 ${isSleeping ? 'rotate-45 translate-y-4 translate-x-2' : 'rotate-12'}`}>
+              <div className="w-full h-1.5 bg-[#1A1A1A] rounded-full origin-right"></div>
+              <div className="absolute -left-1 -top-1.5 w-4 h-4 bg-[#FF9F1C] rounded-full shadow-sm border border-black/10"></div>
+           </div>
+           
+           {/* Braço Direito */}
+           <div className={`relative w-12 h-8 ${isSleeping ? '-rotate-45 translate-y-4 -translate-x-2' : 'animate-wave origin-left'}`}>
+              <div className="w-full h-1.5 bg-[#1A1A1A] rounded-full origin-left"></div>
+              <div className="absolute -right-1 -top-1.5 w-4 h-4 bg-[#FF9F1C] rounded-full shadow-sm border border-black/10"></div>
+           </div>
+        </div>
+
         {!isSleeping && (
           <div className="absolute top-8 flex gap-8 z-0">
             <div className="w-16 h-20 bg-blue-100/60 dark:bg-blue-300/40 rounded-full blur-[1px] transform -rotate-45 origin-bottom-right animate-flutter shadow-[inset_0_0_10px_rgba(255,255,255,0.8)] backdrop-blur-sm"></div>
