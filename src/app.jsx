@@ -95,6 +95,8 @@ export default function App() {
     const saved = localStorage.getItem('hive_isRegistered');
     return saved !== null ? JSON.parse(saved) : false;
   });
+
+  const [showIntroVideo, setShowIntroVideo] = useState(false);
   
   const [bee, setBee] = useState(() => {
     const saved = localStorage.getItem('hive_bee');
@@ -1912,6 +1914,33 @@ export default function App() {
     setIsNight(newIsNight);
   };
 
+  if (showIntroVideo) {
+    return (
+      <div className="fixed inset-0 bg-black z-50 flex items-center justify-center animate-fade-in">
+        <video 
+          src="/assets/video/sua_abelha.mp4" 
+          className="w-full h-full object-cover sm:object-contain sm:max-w-md sm:max-h-[90vh] sm:rounded-3xl sm:border-4 sm:border-white/20 sm:shadow-2xl"
+          autoPlay 
+          playsInline
+          controls
+          onEnded={() => { setShowIntroVideo(false); setIsRegistered(true); }}
+          onError={(e) => {
+            console.error("Erro ao carregar vídeo:", e);
+            alert("Não foi possível carregar o vídeo de introdução. Pule para continuar.");
+          }}
+        >
+          Seu navegador não suporta a tag de vídeo.
+        </video>
+        <button 
+          onClick={() => { setShowIntroVideo(false); setIsRegistered(true); }}
+          className="absolute bottom-8 right-8 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white px-6 py-2 rounded-full font-bold transition-all shadow-lg border border-white/30 z-50"
+        >
+          Pular Introdução
+        </button>
+      </div>
+    );
+  }
+
   if (!isRegistered) {
     return (
       <div className="min-h-screen flex items-center justify-center font-sans dark transition-colors duration-700">
@@ -1941,7 +1970,7 @@ export default function App() {
               </ul>
            </div>
 
-           <HoneyButton onClick={() => { playSound('celebration'); setIsRegistered(true); }} className="w-full text-lg py-4">
+           <HoneyButton onClick={() => { playSound('celebration'); setShowIntroVideo(true); }} className="w-full text-lg py-4">
               Iniciar Jornada
            </HoneyButton>
         </div>
