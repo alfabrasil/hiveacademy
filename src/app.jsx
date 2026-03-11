@@ -194,6 +194,7 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState('home'); // home, game, shop, vault, pvp, settings, wallet, learning, study
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showProfModal, setShowProfModal] = useState(false);
+  const [isChangingProfession, setIsChangingProfession] = useState(false);
   const [showDictionaryModal, setShowDictionaryModal] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
@@ -912,13 +913,28 @@ export default function App() {
     setListeningGameState({ active: false, questions: [], currentIndex: 0, correctCount: 0, finished: false });
   };
 
-  const buyItem = (itemKey, cost, itemName) => {
+  const buyItem = (itemKey, cost, type = 'item') => {
     if (wallet.hny >= cost) {
-      playSound('coin');
-      setWallet(prev => ({ ...prev, hny: prev.hny - cost }));
-      setInventory(prev => ({ ...prev, [itemKey]: prev[itemKey] + 1 }));
-      addTransaction('expense', cost, `Compra: ${itemName}`);
-      addNotification(`Comprou ${itemName}! (-${cost} HNY)`);
+      if (type === 'accessory') {
+          if (ownedAccessories.includes(itemKey)) {
+             playSound('error');
+             addNotification("Você já possui este item!");
+             return;
+          }
+          
+          playSound('coin');
+          setWallet(prev => ({ ...prev, hny: prev.hny - cost }));
+          setOwnedAccessories(prev => [...prev, itemKey]);
+          setBee(p => ({ ...p, equippedAccessory: itemKey }));
+          addNotification("Novo visual adquirido!");
+          addTransaction('expense', cost, `Cosmético: ${itemKey}`);
+      } else {
+          playSound('coin');
+          setWallet(prev => ({ ...prev, hny: prev.hny - cost }));
+          setInventory(prev => ({ ...prev, [itemKey]: prev[itemKey] + 1 }));
+          addTransaction('expense', cost, `Compra: ${itemKey}`); // itemKey aqui age como o nome do item no fluxo antigo
+          addNotification(`Comprou item! (-${cost} HNY)`);
+      }
     } else {
       playSound('error');
       addNotification("HNY Insuficiente para comprar!");
@@ -1819,23 +1835,45 @@ export default function App() {
   const renderProfessionModal = () => {
     if (!showProfModal) return null;
 
+    const cost = isChangingProfession ? 500 : 0;
+    const canAfford = wallet.hny >= cost;
+
     return (
       <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
         <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-md rounded-[40px] p-6 shadow-2xl border border-white/20 animate-slide-up">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-2">Fase Adolescente!</h2>
-            <p className="text-gray-500">A sua abelha cresceu. Escolha uma profissão para definir os seus ganhos futuros.</p>
+            <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-2">
+              {isChangingProfession ? 'Mudar de Profissão' : 'Fase Adolescente!'}
+            </h2>
+            <p className="text-gray-500">
+              {isChangingProfession 
+                ? `Escolha uma nova carreira. Custo: ${cost} HNY.` 
+                : 'A sua abelha cresceu. Escolha uma profissão para definir os seus ganhos futuros.'}
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-3 mb-6">
             {Object.entries(PROFESSIONS).map(([key, prof]) => (
               <button
                 key={key}
+                disabled={isChangingProfession && !canAfford}
                 onClick={() => {
+                  if (isChangingProfession) {
+                    if (wallet.hny < cost) {
+                        playSound('error');
+                        addNotification("HNY Insuficiente!");
+                        return;
+                    }
+                    setWallet(w => ({ ...w, hny: w.hny - cost }));
+                    addTransaction('expense', cost, 'Mudança de Profissão');
+                  }
+                  
                   setBee(p => ({ ...p, profession: key }));
                   setShowProfModal(false);
-                  addNotification(`Profissão ${prof.name} escolhida!`);
+                  setIsChangingProfession(false);
+                  playSound('success');
+                  addNotification(`Profissão alterada para ${prof.name}!`);
                 }}
-                className={`p-4 rounded-3xl border-2 border-transparent bg-gray-50 dark:bg-[#222] hover:border-[#FFC83D] flex flex-col items-center gap-2 transition-all active:scale-95`}
+                className={`p-4 rounded-3xl border-2 ${isChangingProfession && !canAfford ? 'opacity-50 grayscale cursor-not-allowed border-transparent bg-gray-100 dark:bg-[#111]' : 'border-transparent bg-gray-50 dark:bg-[#222] hover:border-[#FFC83D] active:scale-95'} flex flex-col items-center gap-2 transition-all`}
               >
                 <div className={`p-3 rounded-full ${prof.color} text-white shadow-md`}>
                   <prof.icon size={24} />
@@ -1845,6 +1883,11 @@ export default function App() {
               </button>
             ))}
           </div>
+          {isChangingProfession && (
+             <button onClick={() => { setShowProfModal(false); setIsChangingProfession(false); }} className="w-full py-3 text-gray-500 font-bold hover:bg-gray-100 dark:hover:bg-white/5 rounded-2xl transition-colors">
+               Cancelar
+             </button>
+          )}
         </div>
       </div>
     );
@@ -2022,7 +2065,11 @@ export default function App() {
             <AcademyScreen 
               bee={bee} 
               startStudy={study} 
-              playSound={playSound} 
+              playSound={playSound}
+              onChangeProfession={() => {
+                setIsChangingProfession(true);
+                setShowProfModal(true);
+              }}
             />
           )}
           {currentTab === 'vault' && (
