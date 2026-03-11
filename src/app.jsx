@@ -1945,7 +1945,7 @@ export default function App() {
     return (
       <div className="min-h-screen flex items-center justify-center font-sans dark transition-colors duration-700 overflow-hidden">
         <HiveBackground isNight={true} />
-        <div className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[600px] sm:max-h-[900px] bg-black/50 backdrop-blur-md relative flex flex-col justify-between items-center px-8 pt-16 pb-24 sm:p-10 shadow-2xl sm:rounded-[40px] sm:border-[8px] sm:border-white/10 overflow-y-auto sm:overflow-hidden text-center animate-slide-up">
+        <div className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[600px] sm:max-h-[900px] bg-black/50 backdrop-blur-md relative flex flex-col justify-between items-center px-8 pt-16 pb-24 sm:p-10 shadow-2xl sm:rounded-[40px] sm:border-[8px] sm:border-white/10 overflow-y-auto text-center animate-slide-up">
            
            <div className="w-full flex flex-col items-center">
              <h1 className="text-4xl sm:text-5xl font-black text-[#FFC83D] mb-2 drop-shadow-[0_0_15px_rgba(255,200,61,0.6)]">HIVE</h1>
@@ -1979,7 +1979,7 @@ export default function App() {
              </div>
            </div>
 
-           <div className="w-full mt-4 mb-16 sm:mb-8">
+           <div className="w-full mt-4 mb-16 sm:mb-2">
              <HoneyButton onClick={() => { playSound('celebration'); setShowIntroVideo(true); }} className="w-full text-lg py-4 shadow-[0_4px_14px_rgba(255,200,61,0.5)] hover:shadow-[0_6px_20px_rgba(255,200,61,0.7)] transition-shadow">
                 Iniciar Jornada
              </HoneyButton>
