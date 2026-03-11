@@ -16,74 +16,77 @@ const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, 
       )}
       <div className="absolute bottom-4 w-32 h-8 bg-black/20 dark:bg-black/40 blur-md rounded-[100%] transition-all duration-1000 scale-100 animate-pulse"></div>
       <div className={`relative w-full h-full flex justify-center items-center ${isSleeping ? 'translate-y-4' : 'animate-bounce-slow group-active:scale-95 transition-transform'}`}>
-        {/* Pernas */}
-        <div className="absolute bottom-[2%] w-24 flex justify-between px-3 z-0">
-           <div className={`w-2 h-14 bg-[#1A1A1A] rounded-full origin-top transform -rotate-12 shadow-sm ${!isSleeping ? 'animate-swing' : ''}`}>
+        {/* Asas (Ficam no fundo, z-0) */}
+        {!isSleeping && (
+          <div className="absolute top-12 flex gap-24 z-0 w-full justify-center">
+            <div className="w-20 h-24 bg-blue-100/80 dark:bg-blue-300/60 rounded-[100%] blur-[2px] transform -rotate-12 origin-right animate-flutter shadow-[inset_0_0_10px_rgba(255,255,255,0.8)] backdrop-blur-sm border border-white/40"></div>
+            <div className="w-20 h-24 bg-blue-100/80 dark:bg-blue-300/60 rounded-[100%] blur-[2px] transform rotate-12 origin-left animate-flutter-reverse shadow-[inset_0_0_10px_rgba(255,255,255,0.8)] backdrop-blur-sm border border-white/40"></div>
+          </div>
+        )}
+
+        {/* Pernas (z-0, mas visualmente abaixo do corpo) */}
+        <div className="absolute top-[calc(50%+60px)] w-24 flex justify-between px-3 z-0">
+           <div className={`w-2 h-8 bg-[#1A1A1A] rounded-full origin-top transform -rotate-12 shadow-sm ${!isSleeping ? 'animate-swing' : ''}`}>
               <div className="absolute -bottom-1 -left-1 w-4 h-5 bg-[#1A1A1A] rounded-full"></div>
            </div>
-           <div className={`w-2 h-14 bg-[#1A1A1A] rounded-full origin-top transform rotate-12 shadow-sm ${!isSleeping ? 'animate-swing' : ''}`} style={{animationDelay: '0.5s'}}>
+           <div className={`w-2 h-8 bg-[#1A1A1A] rounded-full origin-top transform rotate-12 shadow-sm ${!isSleeping ? 'animate-swing' : ''}`} style={{animationDelay: '0.5s'}}>
               <div className="absolute -bottom-1 -right-1 w-4 h-5 bg-[#1A1A1A] rounded-full"></div>
            </div>
         </div>
 
-        {/* Braços */}
-        <div className="absolute top-[45%] w-44 flex justify-between z-0 pointer-events-none">
+        {/* Braços (z-10, ficam acima das asas mas atrás do corpo) */}
+        <div className="absolute top-[45%] w-48 flex justify-between z-10 pointer-events-none">
            {/* Braço Esquerdo */}
-           <div className={`relative w-12 h-8 ${isSleeping ? 'rotate-45 translate-y-4 translate-x-2' : 'rotate-12'}`}>
-              <div className="w-full h-1.5 bg-[#1A1A1A] rounded-full origin-right"></div>
-              <div className="absolute -left-1 -top-1.5 w-4 h-4 bg-[#FF9F1C] rounded-full shadow-sm border border-black/10"></div>
+           <div className={`relative w-8 h-2 bg-[#1A1A1A] ${isSleeping ? 'rotate-45 translate-y-4 translate-x-2' : '-rotate-12'} rounded-full origin-right`}>
+              <div className="absolute -left-3 -top-1.5 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-sm border border-black/10"></div>
            </div>
            
            {/* Braço Direito */}
-           <div className={`relative w-12 h-8 ${isSleeping ? '-rotate-45 translate-y-4 -translate-x-2' : 'animate-wave origin-left'}`}>
-              <div className="w-full h-1.5 bg-[#1A1A1A] rounded-full origin-left"></div>
-              <div className="absolute -right-1 -top-1.5 w-4 h-4 bg-[#FF9F1C] rounded-full shadow-sm border border-black/10"></div>
+           <div className={`relative w-8 h-2 bg-[#1A1A1A] ${isSleeping ? '-rotate-45 translate-y-4 -translate-x-2' : 'rotate-12'} rounded-full origin-left`}>
+              <div className="absolute -right-3 -top-1.5 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-sm border border-black/10"></div>
            </div>
         </div>
 
-        {!isSleeping && (
-          <div className="absolute top-8 flex gap-8 z-0">
-            <div className="w-16 h-20 bg-blue-100/60 dark:bg-blue-300/40 rounded-full blur-[1px] transform -rotate-45 origin-bottom-right animate-flutter shadow-[inset_0_0_10px_rgba(255,255,255,0.8)] backdrop-blur-sm"></div>
-            <div className="w-16 h-20 bg-blue-100/60 dark:bg-blue-300/40 rounded-full blur-[1px] transform rotate-45 origin-bottom-left animate-flutter-reverse shadow-[inset_0_0_10px_rgba(255,255,255,0.8)] backdrop-blur-sm"></div>
+        <div className="relative w-32 h-40 z-20">
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 flex justify-center gap-1 z-10">
+            <div className="relative w-1.5 h-6 md:h-8 border-l-2 border-t-2 border-[#1A1A1A] rounded-tl-full transform -rotate-[15deg] origin-bottom">
+              <div className="absolute -top-2 -left-2 w-3 h-3 bg-[#FF9F1C] rounded-full shadow-md"></div>
+            </div>
+            <div className="relative w-1.5 h-6 md:h-8 border-r-2 border-t-2 border-[#1A1A1A] rounded-tr-full transform rotate-[15deg] origin-bottom">
+              <div className="absolute -top-2 -right-2 w-3 h-3 bg-[#FF9F1C] rounded-full shadow-md"></div>
+            </div>
           </div>
-        )}
-        <div className="relative w-32 h-40 bg-gradient-to-br from-[#FFC83D] to-[#F4A300] rounded-[60px] shadow-[-10px_-10px_20px_rgba(255,255,255,0.3)_inset,10px_10px_20px_rgba(0,0,0,0.2)_inset] flex flex-col items-center z-10 overflow-hidden border-2 border-[#CC8800]/20">
-          <div className="absolute top-12 w-full h-6 bg-[#1A1A1A] shadow-[0_2px_4px_rgba(0,0,0,0.5)]"></div>
-          <div className="absolute top-24 w-full h-6 bg-[#1A1A1A] shadow-[0_2px_4px_rgba(0,0,0,0.5)]"></div>
-          <div className="relative top-4 w-full px-6 flex justify-between items-center">
-            {isSleeping ? (
-              <>
-                <div className="w-6 h-2 border-b-4 border-[#1A1A1A] rounded-full"></div>
-                <div className="w-6 h-2 border-b-4 border-[#1A1A1A] rounded-full"></div>
-              </>
-            ) : (
-              <>
-                <div className="w-8 h-8 bg-white rounded-full flex justify-center items-center shadow-inner">
-                  <div className="w-4 h-4 bg-[#1A1A1A] rounded-full relative">
-                    <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-white rounded-full"></div>
+
+          <div className="relative z-20 w-full h-full bg-gradient-to-br from-[#FFC83D] to-[#F4A300] rounded-[60px] shadow-[-10px_-10px_20px_rgba(255,255,255,0.3)_inset,10px_10px_20px_rgba(0,0,0,0.2)_inset] flex flex-col items-center overflow-hidden border-2 border-[#CC8800]/20">
+            <div className="absolute top-12 w-full h-6 bg-[#1A1A1A] shadow-[0_2px_4px_rgba(0,0,0,0.5)]"></div>
+            <div className="absolute top-24 w-full h-6 bg-[#1A1A1A] shadow-[0_2px_4px_rgba(0,0,0,0.5)]"></div>
+            <div className="relative top-4 w-full px-6 flex justify-between items-center">
+              {isSleeping ? (
+                <>
+                  <div className="w-6 h-2 border-b-4 border-[#1A1A1A] rounded-full"></div>
+                  <div className="w-6 h-2 border-b-4 border-[#1A1A1A] rounded-full"></div>
+                </>
+              ) : (
+                <>
+                  <div className="w-8 h-8 bg-white rounded-full flex justify-center items-center shadow-inner">
+                    <div className="w-4 h-4 bg-[#1A1A1A] rounded-full relative">
+                      <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-white rounded-full"></div>
+                    </div>
                   </div>
-                </div>
-                <div className="w-8 h-8 bg-white rounded-full flex justify-center items-center shadow-inner">
-                  <div className="w-4 h-4 bg-[#1A1A1A] rounded-full relative">
-                    <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <div className="w-8 h-8 bg-white rounded-full flex justify-center items-center shadow-inner">
+                    <div className="w-4 h-4 bg-[#1A1A1A] rounded-full relative">
+                      <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-white rounded-full"></div>
+                    </div>
                   </div>
-                </div>
-              </>
+                </>
+              )}
+            </div>
+            {!isSleeping && (
+              <div className={`absolute top-10 w-4 h-2 ${isCritical ? 'border-t-2 mt-1' : 'border-b-2'} border-[#1A1A1A] rounded-full transition-all`}></div>
             )}
-          </div>
-          {!isSleeping && (
-             <div className={`absolute top-10 w-4 h-2 ${isCritical ? 'border-t-2 mt-1' : 'border-b-2'} border-[#1A1A1A] rounded-full transition-all`}></div>
-          )}
-          {isIdosa && (
-            <div className="absolute -top-1 w-24 h-6 bg-gray-200/80 rounded-t-full blur-[1px]"></div>
-          )}
-        </div>
-        <div className="absolute -top-4 w-10 flex justify-between z-0">
-          <div className="w-2 h-10 md:h-14 border-l-4 border-t-4 border-[#1A1A1A] rounded-tl-full transform -rotate-12">
-            <div className="absolute -top-3 md:-top-4 -left-3 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-md"></div>
-          </div>
-          <div className="w-2 h-10 md:h-14 border-r-4 border-t-4 border-[#1A1A1A] rounded-tr-full transform rotate-12">
-            <div className="absolute -top-3 md:-top-4 -right-3 w-5 h-5 bg-[#FF9F1C] rounded-full shadow-md"></div>
+            {isIdosa && (
+              <div className="absolute -top-1 w-24 h-6 bg-gray-200/80 rounded-t-full blur-[1px]"></div>
+            )}
           </div>
         </div>
 

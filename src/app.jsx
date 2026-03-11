@@ -191,7 +191,7 @@ export default function App() {
     return { day: initialDay, freeUsed: false, paidCount: 0 };
   });
 
-  const [currentTab, setCurrentTab] = useState('home');
+  const [currentTab, setCurrentTab] = useState('home'); // home, game, shop, vault, pvp, settings, wallet, learning, study
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showProfModal, setShowProfModal] = useState(false);
   const [showDictionaryModal, setShowDictionaryModal] = useState(false);
@@ -1943,36 +1943,47 @@ export default function App() {
 
   if (!isRegistered) {
     return (
-      <div className="min-h-screen flex items-center justify-center font-sans dark transition-colors duration-700">
+      <div className="min-h-screen flex items-center justify-center font-sans dark transition-colors duration-700 overflow-hidden">
         <HiveBackground isNight={true} />
-        <div className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[700px] sm:max-h-[900px] bg-black/50 backdrop-blur-md relative flex flex-col justify-center items-center p-8 shadow-2xl sm:rounded-[40px] sm:border-[8px] sm:border-white/10 overflow-hidden text-center animate-slide-up">
-           <h1 className="text-5xl font-black text-[#FFC83D] mb-2 drop-shadow-[0_0_15px_rgba(255,200,61,0.6)]">HIVE</h1>
-           <h2 className="text-2xl font-bold text-white mb-4 tracking-[0.2em] opacity-80">ACADEMY</h2>
-           <p className="text-gray-300 mb-12 text-sm leading-relaxed">Educação que gera produtividade.<br/>Cuide, aprenda e construa o seu futuro.</p>
+        <div className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[600px] sm:max-h-[900px] bg-black/50 backdrop-blur-md relative flex flex-col justify-between items-center px-8 pt-16 pb-24 sm:p-10 shadow-2xl sm:rounded-[40px] sm:border-[8px] sm:border-white/10 overflow-y-auto sm:overflow-hidden text-center animate-slide-up">
            
-           <div className="w-32 h-32 bg-gradient-to-br from-[#FFC83D] to-[#F4A300] rounded-[40px] rotate-45 flex items-center justify-center shadow-[0_0_40px_rgba(255,200,61,0.4)] mb-12 animate-bounce-slow border-4 border-[#1A1A1A]">
-              <div className="-rotate-45">
-                 <User size={56} className="text-[#1A1A1A]" />
-              </div>
+           <div className="w-full flex flex-col items-center">
+             <h1 className="text-4xl sm:text-5xl font-black text-[#FFC83D] mb-2 drop-shadow-[0_0_15px_rgba(255,200,61,0.6)]">HIVE</h1>
+             <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 tracking-[0.2em] opacity-80">ACADEMY</h2>
+             <p className="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-[80%]">Educação que gera produtividade.<br/>Cuide, aprenda e construa o seu futuro.</p>
+           </div>
+           
+           <div className="flex-1 flex flex-col justify-center items-center w-full my-4">
+             <div className="mb-4 scale-[0.55] origin-center -my-8">
+                <BeeAvatar 
+                  stage="Jovem" 
+                  isSleeping={false} 
+                  isNight={true} 
+                  showHearts={true}
+                  onPet={() => playSound('pop')}
+                />
+             </div>
+
+             <div className="bg-white/10 p-4 sm:p-5 rounded-3xl border border-white/20 w-full backdrop-blur-sm text-left max-w-[320px]">
+                <h3 className="text-white font-bold mb-3 flex items-center gap-2 text-sm sm:text-base"><Award size={18} className="text-[#FFC83D]"/> Bónus de Boas-Vindas:</h3>
+                <ul className="text-xs sm:text-sm text-gray-300 space-y-2 font-medium">
+                   <li className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-green-500/20 flex justify-center items-center border border-green-500/50 flex-shrink-0"><div className="w-2 h-2 rounded-full bg-green-400"></div></div> 
+                      1 Abelha Jovem
+                   </li>
+                   <li className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-yellow-500/20 flex justify-center items-center border border-yellow-500/50 flex-shrink-0"><div className="w-2 h-2 rounded-full bg-yellow-400"></div></div> 
+                      50 HoneyCoins (HNY)
+                   </li>
+                </ul>
+             </div>
            </div>
 
-           <div className="bg-white/10 p-5 rounded-3xl border border-white/20 mb-8 w-full backdrop-blur-sm text-left">
-              <h3 className="text-white font-bold mb-3 flex items-center gap-2"><Award size={18} className="text-[#FFC83D]"/> Bónus de Boas-Vindas:</h3>
-              <ul className="text-sm text-gray-300 space-y-3 font-medium">
-                 <li className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-green-500/20 flex justify-center items-center border border-green-500/50"><div className="w-2 h-2 rounded-full bg-green-400"></div></div> 
-                    1 Abelha Jovem
-                 </li>
-                 <li className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-yellow-500/20 flex justify-center items-center border border-yellow-500/50"><div className="w-2 h-2 rounded-full bg-yellow-400"></div></div> 
-                    50 HoneyCoins (HNY)
-                 </li>
-              </ul>
+           <div className="w-full mt-4 mb-16 sm:mb-8">
+             <HoneyButton onClick={() => { playSound('celebration'); setShowIntroVideo(true); }} className="w-full text-lg py-4 shadow-[0_4px_14px_rgba(255,200,61,0.5)] hover:shadow-[0_6px_20px_rgba(255,200,61,0.7)] transition-shadow">
+                Iniciar Jornada
+             </HoneyButton>
            </div>
-
-           <HoneyButton onClick={() => { playSound('celebration'); setShowIntroVideo(true); }} className="w-full text-lg py-4">
-              Iniciar Jornada
-           </HoneyButton>
         </div>
       </div>
     );
@@ -1987,24 +1998,25 @@ export default function App() {
         <div className="flex-1 overflow-hidden relative">
           {currentTab === 'home' && (
             <HomeScreen 
-              bee={bee}
-              isNight={isNight}
-              setIsNight={handleDayNightToggle}
-              missions={missions}
-              setShowSpinModal={setShowSpinModal}
-              setShowMissions={setShowMissions}
-              beeSpeech={beeSpeech}
-              speakEnglishText={speakEnglishText}
-              inventory={inventory}
-              feedBee={feedBee}
-              cleanBee={cleanBee}
-              useVitamin={useVitamin}
-              study={study}
-              retireBee={retireBee}
-              petBee={petBee}
-              showHearts={showHearts}
-              goToAcademy={() => setCurrentTab('academy')}
-            />
+            bee={bee} 
+            isNight={isNight} 
+            setIsNight={handleDayNightToggle}
+            missions={missions}
+            setShowSpinModal={setShowSpinModal}
+            setShowMissions={setShowMissions}
+            beeSpeech={beeSpeech}
+            speakEnglishText={speakEnglishText}
+            inventory={inventory}
+            feedBee={feedBee}
+            cleanBee={cleanBee}
+            useVitamin={useVitamin}
+            study={study}
+            retireBee={retireBee}
+            petBee={petBee}
+            showHearts={showHearts}
+            goToWarehouse={() => setCurrentTab('armazem')}
+            goToAchievements={() => setCurrentTab('achievements')}
+          />
           )}
           {currentTab === 'academy' && (
             <AcademyScreen 
@@ -2036,6 +2048,19 @@ export default function App() {
           {currentTab === 'listeningGame' && renderListeningGame()}
           {currentTab === 'scenarios' && renderScenarios()}
           {currentTab === 'minigame' && renderMiniGame()}
+          {currentTab === 'learning' && (
+            <AcademyScreen 
+              bee={bee}
+              setBee={setBee}
+              wallet={wallet}
+              setWallet={setWallet}
+              addTransaction={addTransaction}
+              playSound={playSound}
+              addNotification={addNotification}
+              speakEnglishText={speakEnglishText}
+              onClose={() => setCurrentTab('home')}
+            />
+          )}
           {currentTab === 'sentenceBuilder' && renderSentenceBuilder()}
           {currentTab === 'wallet' && <WalletScreen wallet={wallet} setWalletAction={setWalletAction} history={history} />}
           {currentTab === 'team' && <TeamScreen />}
@@ -2095,16 +2120,16 @@ export default function App() {
             <button onClick={() => {setCurrentTab('home'); setIsMenuOpen(false);}} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${currentTab === 'home' && !isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
               <Home size={24} />
             </button>
-            <button onClick={() => {setCurrentTab('game'); setIsMenuOpen(false);}} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${currentTab === 'game' && !isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
-              <Play size={24} />
-            </button>
-            <div className="flex-1 flex justify-center relative -top-6 mx-1">
-              <button onClick={() => {setCurrentTab('shop'); setIsMenuOpen(false);}} className="w-16 h-16 bg-gradient-to-br from-[#FF9F1C] to-[#D35400] rounded-[24px] rotate-45 flex justify-center items-center shadow-[0_10px_20px_rgba(211,84,0,0.4)] border-4 border-[#1A1A1A] hover:scale-110 transition-transform active:scale-95">
-                <div className="-rotate-45 text-white"><ShoppingBag size={28} /></div>
-              </button>
-            </div>
             <button onClick={() => {setCurrentTab('vault'); setIsMenuOpen(false);}} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${currentTab === 'vault' && !isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
               <Lock size={24} />
+            </button>
+            <div className="flex-none w-20 flex justify-center relative -top-6">
+              <button onClick={() => {setCurrentTab('learning'); setIsMenuOpen(false);}} className="w-16 h-16 bg-gradient-to-br from-[#FF9F1C] to-[#D35400] rounded-[24px] rotate-45 flex justify-center items-center shadow-[0_10px_20px_rgba(211,84,0,0.4)] border-4 border-[#1A1A1A] hover:scale-110 transition-transform active:scale-95">
+                <div className="-rotate-45 text-white"><Book size={28} /></div>
+              </button>
+            </div>
+            <button onClick={() => {setCurrentTab('shop'); setIsMenuOpen(false);}} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${currentTab === 'shop' && !isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
+              <ShoppingBag size={24} />
             </button>
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-3 rounded-2xl flex-1 flex justify-center transition-all ${isMenuOpen ? 'bg-[#FFC83D] text-black scale-105 shadow-lg' : 'text-gray-400 hover:text-white'}`}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
