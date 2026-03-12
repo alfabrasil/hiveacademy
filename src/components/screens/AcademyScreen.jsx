@@ -1,9 +1,9 @@
 import React from 'react';
-import { BookOpen, Star, Lock, CheckCircle, Play, Gift } from 'lucide-react';
+import { BookOpen, Star, Lock, CheckCircle, Play, Gift, Briefcase } from 'lucide-react';
 import { LEARNING_PATH } from '../../data/gameData';
 import HoneyButton from '../ui/HoneyButton';
 
-const AcademyScreen = ({ bee, startStudy, playSound }) => {
+const AcademyScreen = ({ bee, startStudy, playSound, onChangeProfession }) => {
   const currentLevel = bee.level;
 
   const handleNodeClick = (node) => {
@@ -103,6 +103,20 @@ const AcademyScreen = ({ bee, startStudy, playSound }) => {
         
         <div className="text-center mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/50">
           <p className="text-xs text-blue-600 dark:text-blue-300 font-bold">Mais fases em breve!</p>
+        </div>
+
+        <div className="mt-8 flex flex-col items-center">
+            <HoneyButton 
+                onClick={onChangeProfession} 
+                variant="secondary" 
+                className="w-full py-4 border-2 border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 shadow-sm"
+            >
+                <div className="flex items-center justify-center gap-2">
+                    <Briefcase size={20} />
+                    <span>Mudar Profissão</span>
+                </div>
+            </HoneyButton>
+            <p className="text-xs text-gray-400 mt-2 font-bold">Custo: 500 HNY</p>
         </div>
       </div>
     </div>

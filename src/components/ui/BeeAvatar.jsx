@@ -1,19 +1,12 @@
 import React from 'react';
 import { Heart, Activity, Book } from 'lucide-react';
 
-const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, showHearts, accessory }) => {
+const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, accessory }) => {
   const isJovem = stage === 'Jovem';
   const isIdosa = stage === 'Idosa';
   
   return (
     <div onClick={onPet} className="relative w-48 h-48 md:w-64 md:h-64 flex justify-center items-center mt-8 cursor-pointer group">
-      {showHearts && (
-        <div className="absolute -top-12 z-50 flex gap-3 animate-slide-up pointer-events-none">
-          <Heart className="text-pink-500 animate-bounce" size={24} fill="currentColor" style={{animationDelay: '0ms'}}/>
-          <Heart className="text-pink-500 animate-bounce" size={36} fill="currentColor" style={{animationDelay: '100ms'}}/>
-          <Heart className="text-pink-500 animate-bounce" size={24} fill="currentColor" style={{animationDelay: '200ms'}}/>
-        </div>
-      )}
       <div className="absolute bottom-4 w-32 h-8 bg-black/20 dark:bg-black/40 blur-md rounded-[100%] transition-all duration-1000 scale-100 animate-pulse"></div>
       <div className={`relative w-full h-full flex justify-center items-center ${isSleeping ? 'translate-y-4' : 'animate-bounce-slow group-active:scale-95 transition-transform'}`}>
         {/* Asas (Ficam no fundo, z-0) */}
@@ -92,26 +85,26 @@ const BeeAvatar = ({ stage, isSleeping, profession, isNight, isCritical, onPet, 
 
         <div className="absolute z-40 pointer-events-none flex justify-center items-center w-full h-full">
           {accessory === 'glasses' && (
-            <div className="absolute top-[52px] flex items-center justify-center gap-[2px] opacity-95 scale-110">
-              <div className="w-12 h-8 bg-gray-900 rounded-xl border-t-2 border-gray-700 shadow-lg"></div>
-              <div className="w-3 h-1.5 bg-gray-900 rounded-full"></div>
-              <div className="w-12 h-8 bg-gray-900 rounded-xl border-t-2 border-gray-700 shadow-lg"></div>
+            <div className="absolute top-[36px] lg:top-[60px] flex items-center justify-center gap-[2px] opacity-95 scale-110">
+              <div className="w-12 h-9 bg-gradient-to-b from-gray-900 to-black rounded-xl border border-gray-700 shadow-lg"></div>
+              <div className="w-3 h-1.5 bg-gray-900 rounded-full shadow-sm"></div>
+              <div className="w-12 h-9 bg-gradient-to-b from-gray-900 to-black rounded-xl border border-gray-700 shadow-lg"></div>
             </div>
           )}
           {accessory === 'crown' && (
-            <div className="absolute -top-12 text-yellow-400 drop-shadow-[0_5px_10px_rgba(250,204,21,0.6)]">
+            <div className="absolute top-[-21px] lg:top-[14px] text-yellow-400 drop-shadow-[0_5px_10px_rgba(250,204,21,0.6)]">
               <div className="w-16 h-10 bg-gradient-to-b from-yellow-300 to-yellow-600" style={{ clipPath: 'polygon(0 0, 20% 50%, 50% 0, 80% 50%, 100% 0, 100% 100%, 0 100%)' }}></div>
             </div>
           )}
           {accessory === 'bowtie' && (
-            <div className="absolute bottom-8 flex items-center justify-center scale-90 drop-shadow-md">
+            <div className="absolute top-[72px] lg:top-[102px] flex items-center justify-center scale-75 drop-shadow-md">
               <div className="w-6 h-8 bg-red-600 rounded-sm transform -skew-y-12 border border-red-800"></div>
               <div className="w-4 h-4 bg-red-800 rounded-full z-10 -mx-2 shadow-sm"></div>
               <div className="w-6 h-8 bg-red-600 rounded-sm transform skew-y-12 border border-red-800"></div>
             </div>
           )}
           {accessory === 'headphone' && (
-             <div className="absolute top-2 w-[140px] h-[100px] border-[10px] border-gray-800 rounded-t-[70px] border-b-0 drop-shadow-xl">
+             <div className="absolute top-[-20px] lg:top-2 w-[140px] h-[100px] border-[10px] border-gray-800 rounded-t-[70px] border-b-0 drop-shadow-xl">
                 <div className="absolute -left-5 bottom-0 w-8 h-14 bg-gray-800 rounded-full flex items-center justify-center"><div className="w-4 h-10 bg-red-500 rounded-full"></div></div>
                 <div className="absolute -right-5 bottom-0 w-8 h-14 bg-gray-800 rounded-full flex items-center justify-center"><div className="w-4 h-10 bg-blue-500 rounded-full"></div></div>
              </div>

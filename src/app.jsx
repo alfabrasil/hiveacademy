@@ -2036,7 +2036,7 @@ export default function App() {
     <div className={`min-h-screen flex items-center justify-center font-sans transition-colors duration-700 ${isNight ? 'dark' : ''}`}>
       <HiveBackground isNight={isNight} />
 
-      <div className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[700px] sm:max-h-[900px] bg-transparent sm:bg-white/5 dark:sm:bg-black/20 sm:backdrop-blur-md relative flex flex-col shadow-2xl sm:rounded-[40px] sm:border-[8px] sm:border-white/30 dark:sm:border-[#1a1a1a]/80 overflow-hidden transition-all duration-300">
+      <div className="w-full sm:max-w-[420px] md:max-w-[700px] lg:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[700px] sm:max-h-[900px] bg-transparent sm:bg-white/5 dark:sm:bg-black/20 sm:backdrop-blur-md relative flex flex-col shadow-2xl sm:rounded-[40px] sm:border-[8px] sm:border-white/30 dark:sm:border-[#1a1a1a]/80 overflow-hidden transition-all duration-300">
         
         <div className="flex-1 overflow-hidden relative">
           {currentTab === 'home' && (
