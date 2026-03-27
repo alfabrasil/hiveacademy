@@ -1988,8 +1988,18 @@ export default function App() {
     return (
       <div className="min-h-screen flex items-center justify-center font-sans dark transition-colors duration-700 overflow-hidden">
         <HiveBackground isNight={true} />
-        <div className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[600px] sm:max-h-[900px] bg-black/50 backdrop-blur-md relative flex flex-col justify-between items-center px-8 pt-16 pb-24 sm:p-10 shadow-2xl sm:rounded-[40px] sm:border-[8px] sm:border-white/10 overflow-y-auto text-center animate-slide-up">
-           
+      <div
+        className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[600px] sm:max-h-[900px] backdrop-blur-md relative shadow-2xl sm:shadow-[0_0_120px_rgba(0,0,0,0.85)] sm:rounded-[40px] sm:border-[8px] sm:border-black/30 text-center animate-slide-up overflow-hidden"
+        style={{
+          backgroundColor: '#000000',
+          backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.90) 14%, rgba(0,0,0,0.00) 32%, rgba(0,0,0,0.00) 68%, rgba(0,0,0,0.90) 86%, rgba(0,0,0,0.90) 100%), linear-gradient(to bottom, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.90) 14%, rgba(0,0,0,0.00) 32%, rgba(0,0,0,0.00) 68%, rgba(0,0,0,0.90) 86%, rgba(0,0,0,0.90) 100%), radial-gradient(ellipse at center, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.22) 58%, rgba(0,0,0,0.92) 100%), linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.58)), url('/assets/background/background1.png?v=4')",
+          backgroundSize: '130% 130%',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+           <div className="absolute inset-0 pointer-events-none z-0 sm:rounded-[32px]" style={{ boxShadow: 'inset 0 0 220px rgba(0,0,0,0.90), inset 0 0 100px rgba(0,0,0,0.82)' }}></div>
+           <div className="w-full h-full overflow-y-auto overflow-x-hidden px-8 pt-16 pb-24 sm:p-10 flex flex-col justify-between items-center relative z-10">
            <div className="w-full flex flex-col items-center">
              <h1 className="text-4xl sm:text-5xl font-black text-[#FFC83D] mb-2 drop-shadow-[0_0_15px_rgba(255,200,61,0.6)]">HIVE</h1>
              <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 tracking-[0.2em] opacity-80">ACADEMY</h2>
@@ -2027,6 +2037,7 @@ export default function App() {
                 Iniciar Jornada
              </HoneyButton>
            </div>
+        </div>
         </div>
       </div>
     );

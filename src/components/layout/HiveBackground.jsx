@@ -17,11 +17,15 @@ const HiveBackground = ({ isNight }) => {
          style={{
            backgroundColor: isNight ? '#0a0600' : '#ff9d00',
            backgroundImage: isNight 
-             ? 'radial-gradient(circle at 50% 10%, #291a00 0%, #0a0600 60%, #000000 100%)' 
-             : 'radial-gradient(circle at 50% 20%, #ffe066 0%, #ff9d00 50%, #cc5500 100%)'
+             ? "radial-gradient(circle at 50% 10%, #291a00 0%, #0a0600 60%, #000000 100%), url('/assets/background/background1.png?v=4')" 
+             : 'radial-gradient(circle at 50% 20%, #ffe066 0%, #ff9d00 50%, #cc5500 100%)',
+           backgroundSize: isNight ? 'cover, cover' : undefined,
+           backgroundPosition: isNight ? 'center, center' : undefined,
+           backgroundRepeat: isNight ? 'no-repeat, no-repeat' : undefined,
+           backgroundBlendMode: isNight ? 'normal, multiply' : undefined
          }}
     >
-      <div className="absolute inset-0 opacity-20 mix-blend-overlay"
+      <div className={`absolute inset-0 ${isNight ? 'opacity-10' : 'opacity-20'} mix-blend-overlay`}
            style={{
              backgroundImage: `
                linear-gradient(30deg, #ffffff 12%, transparent 12.5%, transparent 87%, #ffffff 87.5%, #ffffff),
@@ -33,6 +37,15 @@ const HiveBackground = ({ isNight }) => {
              backgroundPosition: '0 0, 0 0, 20px 35px, 20px 35px'
            }}>
       </div>
+      {isNight && (
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.00) 18%, rgba(0,0,0,0.00) 82%, rgba(0,0,0,0.98) 100%), linear-gradient(to bottom, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.00) 18%, rgba(0,0,0,0.00) 82%, rgba(0,0,0,0.98) 100%), radial-gradient(ellipse at center, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.55) 72%, rgba(0,0,0,0.98) 100%)'
+          }}
+        />
+      )}
       {!isNight && (
         <div className="absolute inset-0 top-[-20%] left-[-20%] w-[140%] h-[140%] animate-spin-slow opacity-30"
              style={{ background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(255,255,255,0.4) 30deg, transparent 60deg, transparent 180deg, rgba(255,255,255,0.4) 210deg, transparent 240deg)' }}>
