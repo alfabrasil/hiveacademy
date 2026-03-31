@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { Volume2, Globe, Settings, Pencil, Calendar, RotateCcw, AlertTriangle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Volume2, Globe, Settings, Pencil, Calendar, RotateCcw, AlertTriangle, Home } from 'lucide-react';
 import HoneyButton from '../ui/HoneyButton';
 
-const SettingsScreen = ({ isNight, setIsNight, playSound, bee, setBee, advanceDay, resetSave }) => {
+const SettingsScreen = ({ isNight, setIsNight, playSound, bee, setBee, advanceDay, resetSave, onClose }) => {
   const [editingName, setEditingName] = useState(false);
   const [tempName, setTempName] = useState(bee.name);
+
+  useEffect(() => {
+    if (!editingName) setTempName(bee.name);
+  }, [bee.name, editingName]);
 
   const handleSaveName = () => {
     if (tempName.trim()) {
@@ -16,9 +20,23 @@ const SettingsScreen = ({ isNight, setIsNight, playSound, bee, setBee, advanceDa
 
   return (
     <div className="p-6 pb-28 h-full overflow-y-auto animate-slide-up">
-      <h2 className="text-2xl font-black mb-6 text-gray-800 dark:text-white flex items-center gap-2">
-        <Settings size={24} className="text-gray-500" /> Configurações
-      </h2>
+      <div className="mb-6">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <div />
+          <h2 className="text-2xl font-black text-gray-800 dark:text-white flex justify-center items-center gap-2 text-center">
+            <Settings size={24} className="text-gray-500" /> Configurações
+          </h2>
+          <button
+            onClick={() => {
+              playSound('pop');
+              if (typeof onClose === 'function') onClose();
+            }}
+            className="justify-self-end px-3 py-2 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white font-bold text-xs border border-gray-200 dark:border-white/10 hover:scale-105 transition"
+          >
+            <span className="inline-flex items-center gap-1"><Home size={14}/> Sair</span>
+          </button>
+        </div>
+      </div>
       
       <div className="space-y-4">
         {/* PERSONALIZAÇÃO */}

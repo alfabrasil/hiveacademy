@@ -50,7 +50,8 @@ import {
   Mic,
   AlignLeft,
   Gift,
-  Headphones
+  Headphones,
+  LogOut
 } from 'lucide-react';
 
 import { playSound, speakEnglish } from './utils/audio';
@@ -86,6 +87,8 @@ import HomeScreen from './components/screens/HomeScreen';
 import VaultScreen from './components/screens/VaultScreen';
 import ShopScreen from './components/screens/ShopScreen';
 import WarehouseScreen from './components/screens/WarehouseScreen';
+
+import AuthScreen from './features/auth/screens/AuthScreen';
 
 const SCENARIO_UNLOCK_COST = 10;
 const FREE_SCENARIO_PHRASES = 3;
@@ -245,6 +248,29 @@ export default function App() {
     }
     return { day: initialDay, plays: 0 };
   });
+
+  const exitToInitial = () => {
+    playSound('pop');
+    setIsMenuOpen(false);
+    setCurrentTab('home');
+    setShowIntroVideo(false);
+    setIsRegistered(false);
+  };
+
+  useEffect(() => {
+    if (!isRegistered) return;
+    try {
+      const currentUserRaw = localStorage.getItem('hive_currentUser');
+      if (!currentUserRaw) return;
+      const currentUser = JSON.parse(currentUserRaw);
+      const username = currentUser?.username;
+      if (!username) return;
+      if (!bee?.name || bee.name === 'Buzzy') {
+        setBee(prev => ({ ...prev, name: username }));
+      }
+    } catch {
+    }
+  }, [isRegistered, bee?.name]);
 
   useEffect(() => {
     localStorage.setItem('hive_isRegistered', JSON.stringify(isRegistered));
@@ -1986,60 +2012,23 @@ export default function App() {
 
   if (!isRegistered) {
     return (
-      <div className="min-h-screen flex items-center justify-center font-sans dark transition-colors duration-700 overflow-hidden">
-        <HiveBackground isNight={true} />
-      <div
-        className="w-full sm:max-w-[420px] h-[100dvh] sm:h-[85vh] sm:min-h-[600px] sm:max-h-[900px] backdrop-blur-md relative shadow-2xl sm:shadow-[0_0_120px_rgba(0,0,0,0.85)] sm:rounded-[40px] sm:border-[8px] sm:border-black/30 text-center animate-slide-up overflow-hidden"
-        style={{
-          backgroundColor: '#000000',
-          backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.90) 14%, rgba(0,0,0,0.00) 32%, rgba(0,0,0,0.00) 68%, rgba(0,0,0,0.90) 86%, rgba(0,0,0,0.90) 100%), linear-gradient(to bottom, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.90) 14%, rgba(0,0,0,0.00) 32%, rgba(0,0,0,0.00) 68%, rgba(0,0,0,0.90) 86%, rgba(0,0,0,0.90) 100%), radial-gradient(ellipse at center, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.22) 58%, rgba(0,0,0,0.92) 100%), linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.58)), url('/assets/background/background1.png?v=4')",
-          backgroundSize: '130% 130%',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+      <AuthScreen 
+        onComplete={() => { 
+          playSound('celebration'); 
+          try {
+            const currentUserRaw = localStorage.getItem('hive_currentUser');
+            if (currentUserRaw) {
+              const currentUser = JSON.parse(currentUserRaw);
+              if (currentUser?.username) {
+                setBee(prev => ({ ...prev, name: currentUser.username }));
+              }
+            }
+          } catch {
+          }
+          setShowIntroVideo(true); 
         }}
-      >
-           <div className="absolute inset-0 pointer-events-none z-0 sm:rounded-[32px]" style={{ boxShadow: 'inset 0 0 220px rgba(0,0,0,0.90), inset 0 0 100px rgba(0,0,0,0.82)' }}></div>
-           <div className="w-full h-full overflow-y-auto overflow-x-hidden px-8 pt-16 pb-24 sm:p-10 flex flex-col justify-between items-center relative z-10">
-           <div className="w-full flex flex-col items-center">
-             <h1 className="text-4xl sm:text-5xl font-black text-[#FFC83D] mb-2 drop-shadow-[0_0_15px_rgba(255,200,61,0.6)]">HIVE</h1>
-             <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 tracking-[0.2em] opacity-80">ACADEMY</h2>
-             <p className="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-[80%]">Educação que gera produtividade.<br/>Cuide, aprenda e construa o seu futuro.</p>
-           </div>
-           
-           <div className="flex-1 flex flex-col justify-center items-center w-full my-4">
-             <div className="mb-4 scale-[0.55] origin-center -my-8">
-                <BeeAvatar 
-                  stage="Jovem" 
-                  isSleeping={false} 
-                  isNight={true} 
-                  showHearts={true}
-                  onPet={() => playSound('pop')}
-                />
-             </div>
-
-             <div className="bg-white/10 p-4 sm:p-5 rounded-3xl border border-white/20 w-full backdrop-blur-sm text-left max-w-[320px]">
-                <h3 className="text-white font-bold mb-3 flex items-center gap-2 text-sm sm:text-base"><Award size={18} className="text-[#FFC83D]"/> Bónus de Boas-Vindas:</h3>
-                <ul className="text-xs sm:text-sm text-gray-300 space-y-2 font-medium">
-                   <li className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-green-500/20 flex justify-center items-center border border-green-500/50 flex-shrink-0"><div className="w-2 h-2 rounded-full bg-green-400"></div></div> 
-                      1 Abelha Jovem
-                   </li>
-                   <li className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-yellow-500/20 flex justify-center items-center border border-yellow-500/50 flex-shrink-0"><div className="w-2 h-2 rounded-full bg-yellow-400"></div></div> 
-                      50 HoneyCoins (HNY)
-                   </li>
-                </ul>
-             </div>
-           </div>
-
-           <div className="w-full mt-4 mb-16 sm:mb-2">
-             <HoneyButton onClick={() => { playSound('celebration'); setShowIntroVideo(true); }} className="w-full text-lg py-4 shadow-[0_4px_14px_rgba(255,200,61,0.5)] hover:shadow-[0_6px_20px_rgba(255,200,61,0.7)] transition-shadow">
-                Iniciar Jornada
-             </HoneyButton>
-           </div>
-        </div>
-        </div>
-      </div>
+        playSound={playSound}
+      />
     );
   }
 
@@ -2075,8 +2064,12 @@ export default function App() {
           {currentTab === 'academy' && (
             <AcademyScreen 
               bee={bee} 
+              isNight={isNight}
               startStudy={study} 
               playSound={playSound}
+              addNotification={addNotification}
+              wallet={wallet}
+              onClose={() => setCurrentTab('home')}
               onChangeProfession={() => {
                 setIsChangingProfession(true);
                 setShowProfModal(true);
@@ -2108,15 +2101,17 @@ export default function App() {
           {currentTab === 'minigame' && renderMiniGame()}
           {currentTab === 'learning' && (
             <AcademyScreen 
-              bee={bee}
-              setBee={setBee}
-              wallet={wallet}
-              setWallet={setWallet}
-              addTransaction={addTransaction}
+              bee={bee} 
+              isNight={isNight}
+              startStudy={study} 
               playSound={playSound}
               addNotification={addNotification}
-              speakEnglishText={speakEnglishText}
+              wallet={wallet}
               onClose={() => setCurrentTab('home')}
+              onChangeProfession={() => {
+                setIsChangingProfession(true);
+                setShowProfModal(true);
+              }}
             />
           )}
           {currentTab === 'sentenceBuilder' && renderSentenceBuilder()}
@@ -2134,6 +2129,7 @@ export default function App() {
               setBee={setBee}
               advanceDay={advanceDay}
               resetSave={resetSave}
+              onClose={() => setCurrentTab('home')}
             />
           )}
         </div>
@@ -2170,6 +2166,10 @@ export default function App() {
               </button>
               <button onClick={() => { setCurrentTab('wallet'); setIsMenuOpen(false); }} className="flex items-center gap-3 p-3 w-full text-left rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-black text-emerald-600 dark:text-emerald-400 transition-colors">
                 <DollarSign size={20} /> Wallet
+              </button>
+              <div className="h-px w-[90%] mx-auto bg-gray-200 dark:bg-white/10 my-1"></div>
+              <button onClick={exitToInitial} className="flex items-center gap-3 p-3 w-full text-left rounded-2xl hover:bg-red-50 dark:hover:bg-red-900/20 font-black text-red-600 dark:text-red-400 transition-colors">
+                <LogOut size={20} /> Sair
               </button>
             </div>
           )}
